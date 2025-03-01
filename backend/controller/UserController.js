@@ -4,7 +4,7 @@ const User = require('../model/UserModel.js');
 
 // Register a new user
 const register = async (req, res) => {
-  
+
   const { name, email, password } = req.body;
   const profileImage = req.file ? req.file.path : 'https://via.placeholder.com/150';
 
@@ -45,7 +45,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   // console.log(req.body)
   const { email, password } = req.body;
- console.log(email,password);
+  //console.log(email,password);
   try {
     // Check if user exists
     const user = await User.findOne({ email });

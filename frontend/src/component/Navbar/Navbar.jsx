@@ -52,6 +52,7 @@ function Navbar() {
         {token ? (
           <div className="relative user-icon">
             <img src={user_icon} alt="User Icon" className="h-8 w-8 rounded-full object-cover" />
+            <p>{user.name}</p>
             <div className="dropdown">
               <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</Link>
               <Link to="/chat" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Chat</Link>

@@ -1,55 +1,106 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAppContext } from '../AllContext/AllContext';
+import './Usercard.css';
+import user_icon from '../../assets/client_image/user_icon.jpeg'
 
-function Usercard({ trip }) {
+function Usercard({ trip: initialTrip }) {
+  const { token, url, user } = useAppContext();
+  
+  const [trip, setTrip] = useState(initialTrip);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleJoin = async () => {
+    try {
+      const response = await fetch(`${url}/api/trips/join-trip`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ tripId: trip._id, userId: user._id }),
+      });
+  
+      const result = await response.json();
+      if (!response.ok) {
+        alert(result.msg);
+        return; // Stop execution if joining the trip fails
+      }
+  
+      alert('Successfully joined the trip');
+  
+      // ✅ Corrected state update
+      const updatedTrip = { ...trip, seatsAvailable: trip.seatsAvailable - 1 };
+      setTrip(updatedTrip);
+    } catch (error) {
+      console.error('Error joining trip:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+  
+
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden flex flex-col sm:flex-row mb-6">
-      {/* Left Section - User Image */}
-      <div className="sm:w-1/3 w-full flex justify-center items-center bg-gray-100 p-4">
-        <img
-          src={trip.userImage || "https://via.placeholder.com/150"}
-          alt="User"
-          className="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full border-4 border-gray-300"
+    <div>
+      {/* Trip Card */}
+      <div className="bg-white shadow-lg rounded-lg p-4 cursor-pointer transition transform hover:scale-105" onClick={() => setIsModalOpen(true)}>
+        <img 
+          src={trip.userId.profileImage || user_icon} 
+          alt="User" 
+          className="w-20 h-20 rounded-full mx-auto border-2 border-gray-300"
         />
-      </div>
-
-      {/* Right Section - Trip Details */}
-      <div className="p-6 w-full sm:w-2/3">
-        {/* User's Name + Trip Route */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{trip.userName}</h2>
-        <p className="text-xl font-semibold text-blue-600 mb-4">
-          {trip.origin} <span className="text-gray-500">→</span> {trip.destination}
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-          <p><strong>Date:</strong> {trip.date}</p>
-          <p><strong>Time:</strong> {trip.time}</p>
-          <p><strong>Seats:</strong> {trip.seatsAvailable}</p>
-          <p><strong>Price:</strong> {trip.pricePerSeat}</p>
-          <p><strong>Vehicle:</strong> {trip.vehicle}</p>
-          <p><strong>Pickup:</strong> {trip.pickupPoint}</p>
-          <p><strong>Mobile:</strong> {trip.mobileNumber}</p>
-          <p><strong>Email:</strong> {trip.email}</p>
-          <p><strong>Joined:</strong> {trip.join_person.count} ({trip.join_person.names.join(', ')})</p>
-        </div>
-        <p className="mt-2"><strong>Description:</strong> {trip.description}</p>
-
-        {/* Buttons */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          <a href={`tel:${trip.mobileNumber}`} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 flex items-center">
-            <i className="fa fa-phone mr-2"></i> Call
-          </a>
-          <a href={`mailto:${trip.email}`} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 flex items-center">
-            <i className="fa fa-envelope mr-2"></i> Mail
-          </a>
-          <button className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-700 transition duration-300 flex items-center">
-            <i className="fa fa-comments mr-2"></i> Chat
-          </button>
-          {/* Join Trip Button */}
-          <button className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition duration-300 flex items-center">
-            <i className="fa fa-user-plus mr-2"></i> Join Trip
-          </button>
+        <div className="text-center mt-3">
+          <h3 className="text-lg font-semibold text-gray-800">{trip.userId.name || 'Unknown User'}</h3>
+          <p className="text-sm text-gray-600"><strong>Origin:</strong> {trip.origin}</p>
+          <p className="text-sm text-gray-600"><strong>Destination:</strong> {trip.destination}</p>
+          <button className="mt-2 bg-blue-500 text-white py-1 px-4 rounded-md hover:bg-blue-600">View Details</button>
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white w-96 p-6 rounded-lg shadow-lg">
+            {/* Close Button */}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Trip Details</h2>
+              <button className="text-gray-600 hover:text-red-500 text-xl" onClick={() => setIsModalOpen(false)}>&times;</button>
+            </div>
+
+            <p><strong>Host Name:</strong> {trip.userId.name}</p>
+            <p><strong>Origin:</strong> {trip.origin}</p>
+            <p><strong>Destination:</strong> {trip.destination}</p>
+            <p><strong>Date:</strong> {new Date(trip.date).toLocaleDateString()}</p>
+            <p><strong>Time:</strong> {trip.time}</p>
+            <p><strong>Seats Available:</strong> {trip.seatsAvailable}</p> {/* ✅ This will now update dynamically */}
+            <p><strong>Price Per Seat:</strong> {trip.pricePerSeat}</p>
+            <p><strong>Vehicle:</strong> {trip.vehicle}</p>
+            <p><strong>Pickup Point:</strong> {trip.pickupPoint}</p>
+            <p><strong>Description:</strong> {trip.description}</p>
+
+            {/* Contact Section */}
+            <div className="mt-4">
+              <p><strong>Phone:</strong> <a href={`tel:${trip.mobileNumber}`} className="text-blue-500">{trip.mobileNumber}</a></p>
+              <p><strong>Email:</strong> <a href={`mailto:${trip.email}`} className="text-blue-500">{trip.email}</a></p>
+            </div>
+
+            {/* Participants */}
+            <p className="mt-3"><strong>Participants:</strong> 
+              {trip.participants.length > 0 ? (
+                trip.participants.map((participant, index) => (
+                  <span key={participant.userId._id}> {participant.userId.name}{index !== trip.participants.length - 1 ? ', ' : ''}</span>
+                ))
+              ) : (
+                <span> No one has joined yet.</span>
+              )}
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex justify-between mt-4">
+              <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Chat</button>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onClick={handleJoin}>Join Trip</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

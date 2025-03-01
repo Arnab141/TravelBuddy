@@ -1,0 +1,106 @@
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+}
+
+.profile-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #3498db;
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    color: #333;
+    margin-top: 10px;
+}
+
+.profile-email {
+    font-size: 1rem;
+    color: #666;
+    margin: 5px 0;
+}
+
+.profile-info {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+/* Stylish Trip Section */
+.trip-header {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: #444;
+    border-bottom: 2px solid #3498db;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* Trip List Styling */
+.trip-list {
+    padding: 0;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Trip Card */
+.trip-item {
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    border-left: 5px solid #3498db;
+}
+
+.trip-item:hover {
+    transform: scale(1.02);
+}
+
+/* Trip Icon */
+.trip-icon {
+    font-size: 24px;
+    color: #3498db;
+    margin-right: 15px;
+}
+
+/* Trip Details */
+.trip-details {
+    text-align: left;
+    flex-grow: 1;
+}
+
+.trip-details strong {
+    color: #222;
+}
+
+.trip-date {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* No Trips Message */
+.no-trips {
+    font-size: 1rem;
+    color: #888;
+    margin-top: 10px;
+}

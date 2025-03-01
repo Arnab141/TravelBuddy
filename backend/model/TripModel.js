@@ -52,6 +52,21 @@ const tripSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  participants: {
+    type: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        joinedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    default: [], 
+  },
   createdAt: {
     type: Date,
     default: Date.now,

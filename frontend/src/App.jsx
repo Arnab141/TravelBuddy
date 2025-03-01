@@ -7,6 +7,7 @@ import { AppProvider } from './component/AllContext/AllContext';
 import FindTrip from './pages/FindTrip.jsx';
 import PostTrip from './pages/PostTrip.jsx';
 import RequestTrip from './pages/RequestTrip.jsx';
+import Profile from './component/Profile/Profile.jsx';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/find-trip" element={<FindTrip/>} />
         <Route path="/post-trip" element={<PostTrip/>} />
         <Route path="/request-trip" element={<RequestTrip/>} />
+        <Route path="/profile" element={<Profile/>} />
         
       </Routes>
       <Footer />

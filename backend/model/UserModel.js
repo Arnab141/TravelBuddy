@@ -21,6 +21,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://via.placeholder.com/150',
   },
+  trips: {
+    type: [
+      {
+        origin: { type: String, required: true },
+        destination: { type: String, required: true },
+        date: { type: Date, default: Date.now }, 
+      },
+    ],
+    default: [], 
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -30,4 +40,3 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 module.exports = User;
-
