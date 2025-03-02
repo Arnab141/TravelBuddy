@@ -54,6 +54,7 @@
 
 .login-form p, .signup-form p {
   margin-top: 10px;
+  
 }
 
 .login-form span, .signup-form span {
@@ -69,5 +70,13 @@
   background: none;
   border: none;
   font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.login-form .forget-password-link {
+  display: block;
+  margin-bottom: 10px;
+  color: #007bff;
+  text-decoration: underline;
   cursor: pointer;
 }

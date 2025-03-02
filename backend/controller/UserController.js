@@ -45,9 +45,8 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   // console.log(req.body)
   const { email, password } = req.body;
-  //console.log(email,password);
   try {
-    // Check if user exists
+  
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid email' });
@@ -71,4 +70,72 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+//forget password
+const nodemailer = require('nodemailer');
+let otpStore = {};
+
+
+const forgetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    console.log(user);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    otpStore[email] = otp;
+
+    // Send OTP via email (configure nodemailer)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: 'your_email@gmail.com', pass: 'your_password' },
+    });
+
+    await transporter.sendMail({
+      from: 'your_email@gmail.com',
+      to: email,
+      subject: 'Password Reset OTP',
+      text: `Your OTP is: ${otp}`,
+    });
+
+    res.json({ success: true, message: 'OTP sent to email' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+//verify otp
+
+
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (otpStore[email] !== otp) return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    
+    delete otpStore[email]; // Clear OTP after successful verification
+    res.json({ success: true, message: 'OTP verified' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// reset password
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    await user.save();
+    
+    res.json({ success: true, message: 'Password reset successful' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+module.exports = { register, login, forgetPassword, verifyOtp, resetPassword };

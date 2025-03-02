@@ -5,7 +5,7 @@ import './Profile.css';
 
 function Profile() {
   const { user } = useAppContext();
-
+   console.log(user);
   return (
     <div className="profile-container">
       <div className="profile-card">

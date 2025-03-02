@@ -8,6 +8,7 @@ import FindTrip from './pages/FindTrip.jsx';
 import PostTrip from './pages/PostTrip.jsx';
 import RequestTrip from './pages/RequestTrip.jsx';
 import Profile from './component/Profile/Profile.jsx';
+import ForgetPass from './pages/ForgetPass.jsx';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/post-trip" element={<PostTrip/>} />
         <Route path="/request-trip" element={<RequestTrip/>} />
         <Route path="/profile" element={<Profile/>} />
+        <Route path='forget-password' element={<ForgetPass/>}/>
         
       </Routes>
       <Footer />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../AllContext/AllContext';
 import './LoginSign.css';
+import { Link } from 'react-router-dom';
 
 function LoginSign({ stateLogin, setStateLogin }) {
   const { setShowLoginPopup, setToken, setUser, url } = useAppContext();
@@ -69,6 +70,7 @@ function LoginSign({ stateLogin, setStateLogin }) {
             <form onSubmit={handleSubmit}>
               <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
               <input type="password" name="password" placeholder="Password" required onChange={handleChange} />
+              <Link to="/forget-password" className="forget-password-link" onClick={()=>setShowLoginPopup(false)}>Forgot password?</Link>
               <button type="submit" className="submit-button">Login</button>
             </form>
             <p>

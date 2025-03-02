@@ -55,8 +55,8 @@ function Navbar() {
             <p>{user.name}</p>
             <div className="dropdown">
               <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</Link>
-              <Link to="/chat" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Chat</Link>
-              <Link to="/your-trips" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Your Trip</Link>
+              {/* <Link to="/chat" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Chat</Link> */}
+              <Link to="/my-trips" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Trip</Link>
               <p onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 logout_btn">
                 Logout
               </p>

@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { register, login } = require('../controller/UserController');
+const { register, login, resetPassword, verifyOtp, forgetPassword  } = require('../controller/UserController');
 
 const UserRoute = express.Router();
 
@@ -19,5 +19,9 @@ const upload = multer({ storage });
 // Routes
 UserRoute.post('/register', upload.single('profileImage'), register);
 UserRoute.post('/login', login);
+
+UserRoute.post('/forget-password',forgetPassword);
+UserRoute.post('/verify-otp',verifyOtp);
+UserRoute.post('/reset-password',resetPassword);
 
 module.exports = UserRoute;
