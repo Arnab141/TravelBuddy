@@ -58,8 +58,12 @@ function Profile() {
       const userData = await response.json();
       setUser(userData.user);
       alert('User information updated successfully');
+
+      // Reset selected image after update
+      setSelectedImage(null);
+
+      // Fetch updated user data
       getUserInformation();
-      
     } catch (error) {
       console.log('Error updating user info:', error);
     }
@@ -70,11 +74,6 @@ function Profile() {
     setEditMode(false);
   };
 
-  useEffect(() => {
-    getUserInformation();
-  },[])
-
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6">
@@ -82,7 +81,7 @@ function Profile() {
         <div className="flex flex-col items-center">
           <label htmlFor="profileImage" className="cursor-pointer relative group">
             <img
-              src={`${url}/${updatedUser.profileImage}`|| user_icon}
+              src={updatedUser.profileImage ? `${url}/${updatedUser.profileImage}` : user_icon}
               alt="Profile"
               className="h-24 w-24 rounded-full border-4 border-gray-300 object-cover"
             />

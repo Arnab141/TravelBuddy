@@ -55,7 +55,7 @@ function Navbar() {
         {token ? (
           <div className="relative user-icon">
             <div className="flex items-center space-x-2 p-2 rounded-md bg-white shadow-md">
-              <img src={`${url}/${user.profileImage}`||user_icon} alt="User Icon" className="h-8 w-8 rounded-full border-2 border-gray-300 object-cover" />
+              <img src={user.profileImage?`${url}/${user.profileImage}`: user_icon} alt="User Icon" className="h-8 w-8 rounded-full border-2 border-gray-300 object-cover" />
               <p className="text-gray-800 font-medium">{user?.name || "User"}</p>
             </div>
             <div className="dropdown">
