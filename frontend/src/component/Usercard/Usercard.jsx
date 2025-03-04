@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../AllContext/AllContext';
 import './Usercard.css';
 import user_icon from '../../assets/client_image/user_icon.jpeg'
 
 function Usercard({ trip: initialTrip }) {
-  const { token, url, user } = useAppContext();
+  const { token, url, user, getUserInformation } = useAppContext();
   
   const [trip, setTrip] = useState(initialTrip);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,6 +37,9 @@ function Usercard({ trip: initialTrip }) {
     }
   };
   
+  useEffect(()=>{
+    getUserInformation();
+  },[]);
 
   return (
     <div>

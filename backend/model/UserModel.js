@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
   },
   profileImage: {
     type: String,
-    default: 'https://tinyurl.com/ycyk3mxb',
   },
   trips: {
     type: [

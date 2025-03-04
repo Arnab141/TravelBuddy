@@ -137,7 +137,6 @@
   }
 }
 
-/* Small screens */
 @media (max-width: 640px) {
   .navbar {
     padding: 1rem;
@@ -164,7 +163,7 @@
 
   .mobile-menu {
     position: fixed;
-    top: 4rem; /* Adjust based on navbar height */
+    top: 4rem; 
     left: 0;
     width: 100%;
     background-color: #007bff;

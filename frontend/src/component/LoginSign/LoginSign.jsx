@@ -9,49 +9,58 @@ function LoginSign({ stateLogin, setStateLogin }) {
     name: '',
     email: '',
     password: '',
-    profileImage: null,
+    confirmPassword: '',
   });
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const endpoint = stateLogin === 'Login' ? '/api/users/login' : '/api/users/register';
     const fullUrl = `${url}${endpoint}`;
-    console.log("Request URL:", fullUrl);
-    console.log("Form Data:", formData);
-  
-    const data = new FormData();
-    for (const key in formData) {
-      data.append(key, formData[key]);
+
+    // Check if passwords match before submitting (only for signup)
+    if (stateLogin === 'Signup' && formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
     }
-  
+
     try {
       const response = await fetch(fullUrl, {
         method: 'POST',
-        body: stateLogin === 'Login' 
-          ? JSON.stringify({ email: formData.email, password: formData.password })  // Login uses JSON
-          : data, // Signup uses FormData
-        headers: stateLogin === 'Login' 
-          ? { "Content-Type": "application/json" }  // Only for Login, FormData sets its own headers
-          : {},
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+        headers: { "Content-Type": "application/json" },
       });
-  
+
       const result = await response.json();
-      console.log("Response:", result);
-  
+      // console.log("Response:", result);
+
       if (response.ok) {
         setToken(result.token);
         localStorage.setItem('token', result.token);
+        
+        console.log(result.user);
+
         setUser(result.user);
-        localStorage.setItem('user', JSON.stringify(result.user));
         setShowLoginPopup(false);
+        
+        // Reset form after successful login/signup
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        });
       } else {
         alert(result.message);
       }
@@ -70,7 +79,7 @@ function LoginSign({ stateLogin, setStateLogin }) {
             <form onSubmit={handleSubmit}>
               <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
               <input type="password" name="password" placeholder="Password" required onChange={handleChange} />
-              <Link to="/forget-password" className="forget-password-link" onClick={()=>setShowLoginPopup(false)}>Forgot password?</Link>
+              <Link to="/forget-password" className="forget-password-link" onClick={() => setShowLoginPopup(false)}>Forgot password?</Link>
               <button type="submit" className="submit-button">Login</button>
             </form>
             <p>
@@ -85,7 +94,7 @@ function LoginSign({ stateLogin, setStateLogin }) {
               <input type="text" name="name" placeholder="Name" required onChange={handleChange} />
               <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
               <input type="password" name="password" placeholder="Password" required onChange={handleChange} />
-              <input type="file" name="profileImage" accept="image/*" onChange={handleChange} />
+              <input type="password" name="confirmPassword" placeholder="Re-enter Password" required onChange={handleChange} />
               <button type="submit" className="submit-button">Sign Up</button>
             </form>
             <p>

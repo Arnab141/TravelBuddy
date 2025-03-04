@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../AllContext/AllContext';
 import LoginSign from '../LoginSign/LoginSign';
@@ -9,7 +9,7 @@ function Navbar() {
   const [activeLink, setActiveLink] = useState('/');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [stateLogin, setStateLogin] = useState("Login");
-  const { showLoginPopup, setShowLoginPopup, token, setToken, user } = useAppContext();
+  const { showLoginPopup, setShowLoginPopup, token, setToken, user, getUserInformation, url } = useAppContext();
 
   const handleLinkClick = (path) => {
     setActiveLink(path);
@@ -23,8 +23,11 @@ function Navbar() {
   const handleLogout = () => {
     setToken('');
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
   };
+
+  useEffect(()=>{
+    getUserInformation();
+  },[token])
 
   return (
     <nav className="navbar flex items-center justify-between p-4 bg-blue-500 shadow-md h-16">
@@ -51,8 +54,10 @@ function Navbar() {
       <div className="flex items-center space-x-4">
         {token ? (
           <div className="relative user-icon">
-            <img src={user_icon} alt="User Icon" className="h-8 w-8 rounded-full object-cover" />
-            <p>{user.name}</p>
+            <div className="flex items-center space-x-2 p-2 rounded-md bg-white shadow-md">
+              <img src={`${url}/${user.profileImage}`||user_icon} alt="User Icon" className="h-8 w-8 rounded-full border-2 border-gray-300 object-cover" />
+              <p className="text-gray-800 font-medium">{user?.name || "User"}</p>
+            </div>
             <div className="dropdown">
               <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</Link>
               {/* <Link to="/chat" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Chat</Link> */}
@@ -88,7 +93,7 @@ function Navbar() {
 
           {token ? (
             <div className="user-icon">
-              <img src={user_icon} alt="User Icon" className="h-10 w-10 rounded-full object-cover" />
+              {/* <img src={user_icon} alt="User Icon" className="h-10 w-10 rounded-full object-cover" /> */}
             </div>
           ) : (
             <div className="auth-buttons flex space-x-4">

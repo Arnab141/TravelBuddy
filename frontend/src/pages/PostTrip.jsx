@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../component/AllContext/AllContext";
 
 function PostTrip() {
-  const { token, url, user } = useAppContext();
+  const { token, url, user, getUserInformation } = useAppContext();
   const navigate = useNavigate();
 
   const [tripDetails, setTripDetails] = useState({
@@ -56,6 +56,10 @@ function PostTrip() {
       console.error("Error posting trip:", error);
     }
   };
+
+  useEffect(()=>{
+    getUserInformation();
+  },[])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 bg-[url('/src/assets/client_image/postTrip_img.jpeg')]">

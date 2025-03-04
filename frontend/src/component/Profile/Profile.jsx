@@ -1,45 +1,169 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../AllContext/AllContext';
-import user_icon from '../../assets/client_image/user_icon.jpeg'
-import './Profile.css';
+import user_icon from '../../assets/client_image/user_icon.jpeg';
 
 function Profile() {
-  const { user } = useAppContext();
-   console.log(user);
+  const { user, setUser, url, token, getUserInformation } = useAppContext();
+  const [editMode, setEditMode] = useState(false);
+  const [updatedUser, setUpdatedUser] = useState({});
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  // Fetch user information on mount
+  useEffect(() => {
+    getUserInformation();
+  }, []);
+
+  // Update `updatedUser` only when `user` is available
+  useEffect(() => {
+    if (user && Object.keys(user).length > 0) {
+      setUpdatedUser({ ...user });
+    }
+  }, [user]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedUser({ ...updatedUser, [name]: value });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      setUpdatedUser({ ...updatedUser, profileImage: URL.createObjectURL(file) });
+    }
+  };
+
+  const userUpdate = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('name', updatedUser.name);
+      formData.append('email', updatedUser.email);
+      if (selectedImage) {
+        formData.append('profileImage', selectedImage);
+      }
+
+      const response = await fetch(`${url}/api/users/update`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        alert('Failed to update user information');
+        return;
+      }
+
+      const userData = await response.json();
+      setUser(userData.user);
+      alert('User information updated successfully');
+      getUserInformation();
+      
+    } catch (error) {
+      console.log('Error updating user info:', error);
+    }
+  };
+
+  const handleSave = () => {
+    userUpdate();
+    setEditMode(false);
+  };
+
+  useEffect(() => {
+    getUserInformation();
+  },[])
+
+
   return (
-    <div className="profile-container">
-      <div className="profile-card">
-        {/* Profile Image with Default Icon */}
-        <img 
-          src={user.profileImage || user_icon} 
-          alt="Profile" 
-          className="profile-image" 
-        />
-        
-        {/* User Info */}
-        <h2 className="profile-name">{user.name}</h2>
-        <p className="profile-email">{user.email}</p>
-        <p className="profile-info"><strong>Mobile Number:</strong> {user.mobileNumber || 'Not Provided'}</p>
-        <p className="profile-info"><strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+      <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6">
+        {/* Profile Image Section */}
+        <div className="flex flex-col items-center">
+          <label htmlFor="profileImage" className="cursor-pointer relative group">
+            <img
+              src={`${url}/${updatedUser.profileImage}`|| user_icon}
+              alt="Profile"
+              className="h-24 w-24 rounded-full border-4 border-gray-300 object-cover"
+            />
+            {editMode && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition">
+                <span className="text-white text-sm">Change</span>
+              </div>
+            )}
+          </label>
+          {editMode && (
+            <input
+              type="file"
+              id="profileImage"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+          )}
+        </div>
+
+        {/* Profile Info Section */}
+        <div className="text-center mt-4">
+          {editMode ? (
+            <input
+              type="text"
+              name="name"
+              value={updatedUser.name || ''}
+              onChange={handleChange}
+              className="text-xl font-semibold text-gray-800 text-center border-b-2 border-gray-300 focus:outline-none focus:border-blue-500"
+            />
+          ) : (
+            <h2 className="text-xl font-semibold text-gray-800">{updatedUser.name || 'User Name'}</h2>
+          )}
+          <p className="text-gray-500">{updatedUser.email || 'No Email Provided'}</p>
+        </div>
 
         {/* Trip Details Section */}
-        <h3 className="trip-header">Trip History</h3>
-        {user.trips && user.trips.length > 0 ? (
-          <div className="trip-list">
-            {user.trips.map((trip, index) => (
-              <div key={index} className="trip-item">
-                <span className="trip-icon">📍</span>
-                <div className="trip-details">
-                  <strong>{trip.origin}</strong> → <strong>{trip.destination}</strong>  
+        <h3 className="mt-6 text-lg font-semibold text-gray-700">Trip History</h3>
+        {updatedUser.trips?.length > 0 ? (
+          <div className="mt-2 space-y-2">
+            {updatedUser.trips.map((trip, index) => (
+              <div key={index} className="flex items-center space-x-2 bg-gray-100 p-2 rounded-lg">
+                <span className="text-blue-500">📍</span>
+                <div>
+                  <strong>{trip.origin}</strong> → <strong>{trip.destination}</strong>
                   <br />
-                  <span className="trip-date">📅 {new Date(trip.date).toLocaleDateString()}</span>
+                  <span className="text-gray-500 text-sm">📅 {new Date(trip.date).toLocaleDateString()}</span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="no-trips">No trips recorded yet.</p>
+          <p className="mt-2 text-gray-500">No trips recorded yet.</p>
         )}
+
+        {/* Edit & Save Buttons */}
+        <div className="mt-6 flex justify-center">
+          {editMode ? (
+            <>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setEditMode(false)}
+                className="ml-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setEditMode(true)}
+              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+            >
+              Edit Profile
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
