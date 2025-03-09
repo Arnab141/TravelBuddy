@@ -1,96 +1,96 @@
 /* Trip Card */
 .usercard {
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    cursor: pointer;
-  }
-  
-  .usercard-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-  }
-  
-  .usercard-details {
-    flex: 1;
-  }
-  
-  .usercard-name {
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-  
-  .usercard-info {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .view-details-button {
-    margin-top: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .view-details-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Modal */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-  }
-  
-  /* Modal Header */
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  /* Close Button Inside Modal */
-  .close-button {
-    font-size: 24px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #333;
-  }
-  
-  .close-button:hover {
-    color: red;
-  }
-  
-  .modal-title {
-    font-size: 1.5rem;
-  }
-  
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.usercard-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.usercard-details {
+  flex: 1;
+}
+
+.usercard-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.usercard-info {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.view-details-button {
+  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.view-details-button:hover {
+  background-color: #0056b3;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* Close Button Inside Modal */
+.close-button {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.close-button:hover {
+  color: red;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+}

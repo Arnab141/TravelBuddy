@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../AllContext/AllContext';
-import './LoginSign.css';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './LoginSign.css';
 
 function LoginSign({ stateLogin, setStateLogin }) {
   const { setShowLoginPopup, setToken, setUser, url } = useAppContext();
@@ -27,7 +29,7 @@ function LoginSign({ stateLogin, setStateLogin }) {
 
     // Check if passwords match before submitting (only for signup)
     if (stateLogin === 'Signup' && formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
@@ -43,14 +45,10 @@ function LoginSign({ stateLogin, setStateLogin }) {
       });
 
       const result = await response.json();
-      // console.log("Response:", result);
 
       if (response.ok) {
         setToken(result.token);
         localStorage.setItem('token', result.token);
-        
-        console.log(result.user);
-
         setUser(result.user);
         setShowLoginPopup(false);
         
@@ -61,12 +59,14 @@ function LoginSign({ stateLogin, setStateLogin }) {
           password: '',
           confirmPassword: '',
         });
+
+        toast.success(stateLogin === 'Login' ? 'Login Successful!' : 'Signup Successful!');
       } else {
-        alert(result.message);
+        toast.error(result.message || 'Something went wrong!');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     }
   };
 

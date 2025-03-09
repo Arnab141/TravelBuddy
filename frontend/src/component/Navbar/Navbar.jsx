@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate  } from 'react-router-dom';
 import { useAppContext } from '../AllContext/AllContext';
 import LoginSign from '../LoginSign/LoginSign';
 import './Navbar.css';
 import user_icon from "../../assets/client_image/user_icon.jpeg";
 
 function Navbar() {
+  const navigate= useNavigate();
   const [activeLink, setActiveLink] = useState('/');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [stateLogin, setStateLogin] = useState("Login");
-  const { showLoginPopup, setShowLoginPopup, token, setToken, user, getUserInformation, url } = useAppContext();
+  const { showLoginPopup, setShowLoginPopup, token, setToken, user, getUserInformation, url, setUser } = useAppContext();
 
   const handleLinkClick = (path) => {
     setActiveLink(path);
@@ -23,6 +24,9 @@ function Navbar() {
   const handleLogout = () => {
     setToken('');
     localStorage.removeItem('token');
+    setUser({});
+    navigate('/');
+
   };
 
   useEffect(()=>{

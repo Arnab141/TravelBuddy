@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../component/AllContext/AllContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function PostTrip() {
   const { token, url, user, getUserInformation } = useAppContext();
@@ -47,22 +49,50 @@ function PostTrip() {
           userId: user._id, 
         }),
       });
+
       if (response.ok) {
-        navigate("/");
+        toast.success("Trip posted successfully! 🎉", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        setTimeout(() => navigate("/"), 3000); // Redirect after toast
       } else {
-        alert("Failed to post trip");
+        toast.error("Failed to post trip. Please try again!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
       }
     } catch (error) {
       console.error("Error posting trip:", error);
+      toast.error("Server error. Please try again later.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     getUserInformation();
-  },[])
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 bg-[url('/src/assets/client_image/postTrip_img.jpeg')]">
+      <ToastContainer />
       <div className="bg-white bg-opacity-90 p-10 rounded-xl shadow-lg max-w-4xl w-full">
         <h2 className="text-center text-3xl font-extrabold text-gray-900 mb-6">
           Post a Trip

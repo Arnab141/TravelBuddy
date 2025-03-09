@@ -16,7 +16,6 @@ function FindTrip() {
           throw new Error('Failed to fetch trips');
         }
         const data = await response.json();
-        console.log('Fetched Trips:', data); // Debugging: Check response structure
         setTrips(data);
       } catch (error) {
         console.error('Error fetching trips:', error);
@@ -25,7 +24,7 @@ function FindTrip() {
     };
 
     fetchTrips();
-  }, []);
+  }, [url]);
 
   const filteredTrips = trips.filter(trip =>
     trip.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -33,7 +32,7 @@ function FindTrip() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-gray-100 py-8 sm:py-10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-gray-200 py-8 sm:py-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-20">
         <h1 className="text-3xl sm:text-5xl font-bold text-center text-gray-800 mb-4 sm:mb-6">
           Find a Trip
@@ -43,26 +42,32 @@ function FindTrip() {
         </p>
 
         {/* Search Input */}
-        <div className="mb-6 sm:mb-10">
+        <div className="mb-6 sm:mb-10 flex justify-center">
           <input
             type="text"
             placeholder="Search by origin or destination..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-3 sm:p-4 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+            className="w-full max-w-lg p-3 sm:p-4 border border-gray-300 rounded-lg shadow-md focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
           />
         </div>
 
         {/* Trip List */}
-        <div className="flex flex-col space-y-6 sm:space-y-8">
+        <div className="flex flex-wrap justify-center gap-6">
           {error ? (
-            <p className="text-center text-red-500">{error}</p>
+            <div className="error-message w-full text-center">
+              <p className="text-red-500">{error}</p>
+            </div>
           ) : filteredTrips.length > 0 ? (
             filteredTrips.map((trip) => (
-              <Usercard key={trip._id} trip={trip} />
+              <div key={trip._id} className="bg-white shadow-lg rounded-lg p-5 w-full sm:w-80 md:w-72 lg:w-64 transition transform hover:scale-105 hover:shadow-xl z-[1]">
+                <Usercard trip={trip} />
+              </div>
             ))
           ) : (
-            <p className="text-center text-gray-600">No trips found.</p>
+            <div className="no-trips-message w-full text-center">
+              <p className="text-gray-600">No trips found.</p>
+            </div>
           )}
         </div>
       </div>

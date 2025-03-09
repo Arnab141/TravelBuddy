@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../AllContext/AllContext';
 import user_icon from '../../assets/client_image/user_icon.jpeg';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Profile() {
   const { user, setUser, url, token, getUserInformation } = useAppContext();
@@ -8,12 +10,10 @@ function Profile() {
   const [updatedUser, setUpdatedUser] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Fetch user information on mount
   useEffect(() => {
     getUserInformation();
   }, []);
 
-  // Update `updatedUser` only when `user` is available
   useEffect(() => {
     if (user && Object.keys(user).length > 0) {
       setUpdatedUser({ ...user });
@@ -51,21 +51,19 @@ function Profile() {
       });
 
       if (!response.ok) {
-        alert('Failed to update user information');
+        toast.error('Failed to update user information');
         return;
       }
 
       const userData = await response.json();
       setUser(userData.user);
-      alert('User information updated successfully');
+      toast.success('User information updated successfully');
 
-      // Reset selected image after update
       setSelectedImage(null);
-
-      // Fetch updated user data
       getUserInformation();
     } catch (error) {
       console.log('Error updating user info:', error);
+      toast.error('Something went wrong!');
     }
   };
 
@@ -77,7 +75,6 @@ function Profile() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6">
-        {/* Profile Image Section */}
         <div className="flex flex-col items-center">
           <label htmlFor="profileImage" className="cursor-pointer relative group">
             <img
@@ -85,24 +82,12 @@ function Profile() {
               alt="Profile"
               className="h-24 w-24 rounded-full border-4 border-gray-300 object-cover"
             />
-            {editMode && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition">
-                <span className="text-white text-sm">Change</span>
-              </div>
-            )}
           </label>
           {editMode && (
-            <input
-              type="file"
-              id="profileImage"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageChange}
-            />
+            <input type="file" id="profileImage" accept="image/*" className="hidden" onChange={handleImageChange} />
           )}
         </div>
 
-        {/* Profile Info Section */}
         <div className="text-center mt-4">
           {editMode ? (
             <input
@@ -118,7 +103,6 @@ function Profile() {
           <p className="text-gray-500">{updatedUser.email || 'No Email Provided'}</p>
         </div>
 
-        {/* Trip Details Section */}
         <h3 className="mt-6 text-lg font-semibold text-gray-700">Trip History</h3>
         {updatedUser.trips?.length > 0 ? (
           <div className="mt-2 space-y-2">
@@ -137,28 +121,18 @@ function Profile() {
           <p className="mt-2 text-gray-500">No trips recorded yet.</p>
         )}
 
-        {/* Edit & Save Buttons */}
         <div className="mt-6 flex justify-center">
           {editMode ? (
             <>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-              >
+              <button onClick={handleSave} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
                 Save
               </button>
-              <button
-                onClick={() => setEditMode(false)}
-                className="ml-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
-              >
+              <button onClick={() => setEditMode(false)} className="ml-4 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
                 Cancel
               </button>
             </>
           ) : (
-            <button
-              onClick={() => setEditMode(true)}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
-            >
+            <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
               Edit Profile
             </button>
           )}
