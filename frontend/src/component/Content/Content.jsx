@@ -50,9 +50,7 @@ function Content() {
       </p>
 
       {/* Display Screen Size */}
-      <p className="text-xl text-gray-700 font-medium mb-6">
-        Screen Width: {screenSize.width}px | Screen Height: {screenSize.height}px
-      </p>
+      
 
       {/* Buttons */}
       <div className="flex justify-center gap-8 mb-16 flex-wrap my-10">
