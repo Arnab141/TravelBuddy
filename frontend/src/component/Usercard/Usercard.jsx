@@ -40,7 +40,7 @@ function Usercard({ trip: initialTrip }) {
 
   useEffect(() => {
     getUserInformation();
-  }, []);
+  }, [token]);
 
   return (
     <div>

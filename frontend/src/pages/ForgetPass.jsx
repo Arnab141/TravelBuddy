@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../component/AllContext/AllContext';
+import forgetPassword_image from "../assets/client_image/forget_password.avif";
 
 function ForgetPass() {
   const [step, setStep] = useState(1);
@@ -7,7 +8,7 @@ function ForgetPass() {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const {url} = useAppContext();
+  const { url } = useAppContext();
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -64,29 +65,54 @@ function ForgetPass() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        {step === 1 && (
-          <form onSubmit={handleEmailSubmit} className="space-y-4">
-            <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full p-2 border rounded" />
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Submit</button>
-          </form>
-        )}
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-blue-100 via-blue-200 to-purple-300 p-4">
+      <div className="flex w-full max-w-4xl h-auto md:h-[550px] bg-white rounded-lg shadow-lg overflow-hidden">
         
-        {step === 2 && (
-          <form onSubmit={handleOtpSubmit} className="space-y-4">
-            <input type="text" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} required className="w-full p-2 border rounded" />
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Verify OTP</button>
-          </form>
-        )}
+        {/* Left Side - Form Section */}
+        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
+          <h2 className="text-3xl font-bold mb-6 text-blue-700">
+            {step === 1 ? "Forgot Password" : step === 2 ? "Enter OTP" : "Reset Password"}
+          </h2>
+          {step === 1 && (
+            <form onSubmit={handleEmailSubmit} className="space-y-6">
+              <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required 
+                className="w-full p-4 border rounded-lg focus:border-blue-500 focus:ring-blue-300"
+              />
+              <button type="submit" className="w-full bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700">
+                Submit
+              </button>
+            </form>
+          )}
+          {step === 2 && (
+            <form onSubmit={handleOtpSubmit} className="space-y-6">
+              <input type="text" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} required 
+                className="w-full p-4 border rounded-lg focus:border-blue-500 focus:ring-blue-300"
+              />
+              <button type="submit" className="w-full bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700">
+                Verify OTP
+              </button>
+            </form>
+          )}
+          {step === 3 && (
+            <form onSubmit={handlePasswordSubmit} className="space-y-6">
+              <input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required 
+                className="w-full p-4 border rounded-lg focus:border-blue-500 focus:ring-blue-300"
+              />
+              <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required 
+                className="w-full p-4 border rounded-lg focus:border-blue-500 focus:ring-blue-300"
+              />
+              <button type="submit" className="w-full bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700">
+                Reset Password
+              </button>
+            </form>
+          )}
+        </div>
         
-        {step === 3 && (
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className="w-full p-2 border rounded" />
-            <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="w-full p-2 border rounded" />
-            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Reset Password</button>
-          </form>
-        )}
+        {/* Right Side - Image Section */}
+        <div className="hidden md:flex md:w-1/2 bg-blue-100 flex-col justify-center items-center p-8 text-center">
+          <img src={forgetPassword_image} alt="Illustration" className="w-56 h-56 object-contain mb-6" />
+          <p className="text-lg font-semibold text-blue-800">Don't worry, we'll help you.</p>
+        </div>
       </div>
     </div>
   );

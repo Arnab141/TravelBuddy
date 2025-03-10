@@ -43,7 +43,7 @@ export const AppProvider = ({ children }) => {
     if (token) {
       getUserInformation();
     }
-  }, [token]); // ✅ Runs only when token changes
+  }, [token]); 
 
   const value = {
     showLoginPopup,

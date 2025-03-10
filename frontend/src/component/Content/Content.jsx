@@ -1,11 +1,33 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Content.css';
 import { useAppContext } from '../AllContext/AllContext';
 
 function Content() {
   const { token, setShowLoginPopup } = useAppContext();
   const navigate = useNavigate();
+  const [screenSize, setScreenSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  // Debounced resize event to improve performance
+  useEffect(() => {
+    let timeoutId;
+    
+    const updateScreenSize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setScreenSize({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      }, 150); // Adjust debounce delay as needed
+    };
+
+    window.addEventListener('resize', updateScreenSize);
+    return () => window.removeEventListener('resize', updateScreenSize);
+  }, []);
 
   const handleNavigation = (path) => {
     if (!token) {
@@ -25,6 +47,11 @@ function Content() {
       <p className="text-2xl text-gray-600 mb-10 font-medium">
         Choose how you want to travel with 
         <span className="text-blue-600 font-bold"> TravelBuddy</span>
+      </p>
+
+      {/* Display Screen Size */}
+      <p className="text-xl text-gray-700 font-medium mb-6">
+        Screen Width: {screenSize.width}px | Screen Height: {screenSize.height}px
       </p>
 
       {/* Buttons */}

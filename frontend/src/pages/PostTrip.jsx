@@ -22,6 +22,10 @@ function PostTrip() {
     email: "",
   });
 
+  useEffect(() => {
+    getUserInformation();
+  }, []);
+
   if (!token) {
     return (
       <div className="text-center text-red-500 text-lg mt-10">
@@ -46,7 +50,7 @@ function PostTrip() {
         },
         body: JSON.stringify({
           ...tripDetails,
-          userId: user._id, 
+          userId: user._id,
         }),
       });
 
@@ -86,18 +90,15 @@ function PostTrip() {
     }
   };
 
-  useEffect(() => {
-    getUserInformation();
-  }, []);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 bg-[url('/src/assets/client_image/postTrip_img.jpeg')]">
       <ToastContainer />
-      <div className="bg-white bg-opacity-90 p-10 rounded-xl shadow-lg max-w-4xl w-full">
+      <div className="bg-white bg-opacity-95 p-12 rounded-xl shadow-xl max-w-4xl w-full">
         <h2 className="text-center text-3xl font-extrabold text-gray-900 mb-6">
-          Post a Trip
+          🚗 Post a Trip
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Trip Details */}
           <div className="grid grid-cols-2 gap-6">
             {[
               { label: "Origin", name: "origin", type: "text", placeholder: "Start Location" },
@@ -105,62 +106,94 @@ function PostTrip() {
               { label: "Date", name: "date", type: "date" },
               { label: "Time", name: "time", type: "time" },
               { label: "Seats Available", name: "seatsAvailable", type: "number", placeholder: "Seats Available" },
-              { label: "Price Per Seat", name: "pricePerSeat", type: "number", placeholder: "Price" },
-              { label: "Vehicle", name: "vehicle", type: "text", placeholder: "Car/Bike/Bus" },
-              { label: "Pickup Point", name: "pickupPoint", type: "text", placeholder: "Pickup Location" },
+              { label: "Price Per Seat ($)", name: "pricePerSeat", type: "number", placeholder: "Price" },
             ].map(({ label, name, type, placeholder }) => (
               <div key={name}>
-                <label className="block text-gray-700">{label}</label>
+                <label className="block text-gray-700 font-semibold">{label}</label>
                 <input
                   type={type}
                   name={name}
                   value={tripDetails[name]}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition"
                   placeholder={placeholder}
                 />
               </div>
             ))}
+
+            {/* Vehicle Type - Dropdown */}
+            <div>
+              <label className="block text-gray-700 font-semibold">Vehicle Type</label>
+              <select
+                name="vehicle"
+                value={tripDetails.vehicle}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition"
+              >
+                <option value="">Select a vehicle</option>
+                <option value="Car">Car</option>
+                <option value="Bike">Bike</option>
+                <option value="Van">Van</option>
+                <option value="Bus">Bus</option>
+              </select>
+            </div>
+
+            {/* Pickup Point */}
+            <div>
+              <label className="block text-gray-700 font-semibold">Pickup Point</label>
+              <input
+                type="text"
+                name="pickupPoint"
+                value={tripDetails.pickupPoint}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition"
+                placeholder="Pickup Location"
+              />
+            </div>
           </div>
 
+          {/* Contact Details */}
           <div className="grid grid-cols-2 gap-6 mt-6">
             {[
               { label: "Mobile Number", name: "mobileNumber", type: "tel", placeholder: "Phone Number" },
               { label: "Email", name: "email", type: "email", placeholder: "Email" },
             ].map(({ label, name, type, placeholder }) => (
               <div key={name}>
-                <label className="block text-gray-700">{label}</label>
+                <label className="block text-gray-700 font-semibold">{label}</label>
                 <input
                   type={type}
                   name={name}
                   value={tripDetails[name]}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition"
                   placeholder={placeholder}
                 />
               </div>
             ))}
           </div>
 
+          {/* Description */}
           <div className="mt-6">
-            <label className="block text-gray-700">Description</label>
+            <label className="block text-gray-700 font-semibold">Description</label>
             <textarea
               name="description"
               value={tripDetails.description}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Additional details about the trip"
+              className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="Any additional details about the trip..."
             ></textarea>
           </div>
 
           <button
             type="submit"
-            className="mt-6 w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition"
+            className="mt-6 w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition"
           >
-            Post Trip
+            🚀 Post Trip
           </button>
         </form>
       </div>

@@ -1,82 +1,188 @@
-.login-sign-overlay {
+/* Overlay Background */
+.login-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index:99;
 }
 
-.login-sign-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  text-align: center;
+/* Login Container */
+.login-container {
   position: relative;
+  width: 650px;
+  background: white;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.login-form, .signup-form {
-  margin-bottom: 20px;
-}
-
-.login-form h2, .signup-form h2 {
-  margin-bottom: 20px;
-}
-
-.login-form input, .signup-form input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.login-form button, .signup-form button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.login-form .submit-button:hover, .signup-form .submit-button:hover {
-  background-color: #0056b3;
-}
-
-.login-form p, .signup-form p {
-  margin-top: 10px;
-  
-}
-
-.login-form span, .signup-form span {
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.close-button {
+/* Close Button */
+.close-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555;
+}
+
+.close-btn:hover {
+  color: #222;
+}
+
+/* Left Side - Form Section */
+.form-container {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.input-field:focus {
+  border-color: #ff6600;
+  outline: none;
+}
+
+/* Forgot Password */
+.login-form .forgot-password {
+  text-align: right;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.login-form .forgot-password a {
+  color: #ff6600;
+  text-decoration: none;
+}
+
+.login-form .forgot-password a:hover {
+  text-decoration: underline;
+}
+
+/* Submit Button */
+.login-form .submit-btn {
+  width: 100%;
+  background: #ff6600;
+  color: white;
+  padding: 12px;
+  border: none;
+  font-size: 16px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.login-form .forget-password-link {
-  display: block;
-  margin-bottom: 10px;
-  color: #007bff;
-  text-decoration: underline;
+.login-form .submit-btn:hover {
+  background: #e65c00;
+}
+
+/* Switch Between Login & Signup */
+.switch-text {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.switch-text span {
+  color: #ff6600;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.switch-text span:hover {
+  text-decoration: underline;
+}
+
+
+.login-container .image-container {
+  background: #fff3e0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px; 
+  border-radius: 12px; 
+}
+
+.login-container .image-container img {
+  width: 220px; 
+  height: 220px; 
+  object-fit: contain;
+  border-radius: 12px; 
+}
+
+.login-container .image-container h2 {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 15px;
+}
+
+
+
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
+  /* Adjust Overlay */
+  .login-overlay {
+    padding: 20px;
+  }
+
+  /* Make the container full-width on mobile */
+  .login-container {
+    width: 90%;
+    grid-template-columns: 1fr; /* Stack the form and image vertically */
+  }
+
+  /* Adjust Form Section */
+  .form-container {
+    padding: 20px;
+  }
+
+  .form-title {
+    font-size: 22px;
+  }
+
+  .input-field {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .submit-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  /* Hide Image Section on Smaller Screens (Optional) */
+  .image-container {
+    display: none; /* Remove this if you want the image to show */
+  }
 }

@@ -16,6 +16,14 @@ const tripSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  originCoords: {
+    type: [Number], // Format: [latitude, longitude]
+    required: true,
+  },
+  destinationCoords: {
+    type: [Number], // Format: [latitude, longitude]
+    required: true,
+  },
   date: {
     type: Date,
     required: true,

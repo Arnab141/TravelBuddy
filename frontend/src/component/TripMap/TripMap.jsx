@@ -24,15 +24,15 @@ function TripMap({ TripData }) {
 
   useEffect(() => {
     getUserInformation();
-  }, [url, token, user]); // Added user as a dependency
+  }, [getUserInformation]);
 
-  // console.log(TripData)
   if (!TripData) {
     return <p className="text-center text-xl font-semibold text-gray-600">No trip data available.</p>;
   }
 
   const { trip, users } = TripData;
   const isHost = user?._id === trip.userId;
+  const hasValidCoords = trip.originCoords?.length === 2 && trip.destinationCoords?.length === 2;
 
   const handleCancelTrip = async () => {
     if (!window.confirm("Are you sure you want to cancel this trip?")) return;
@@ -46,9 +46,7 @@ function TripMap({ TripData }) {
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to cancel trip");
-      }
+      if (!response.ok) throw new Error("Failed to cancel trip");
 
       alert("Trip canceled successfully!");
     } catch (error) {
@@ -70,9 +68,7 @@ function TripMap({ TripData }) {
         body: JSON.stringify({ userId: user._id }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to leave trip");
-      }
+      if (!response.ok) throw new Error("Failed to leave trip");
 
       alert("You have left the trip successfully!");
     } catch (error) {
@@ -82,52 +78,79 @@ function TripMap({ TripData }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-5xl mx-auto p-6 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg">
       {/* Map Section */}
-      <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Trip Route</h2>
-        <MapContainer center={trip.originCoords} zoom={6} scrollWheelZoom={false} className="w-full h-96 rounded-lg">
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <Marker position={trip.originCoords} icon={startIcon}>
-            <Popup>Start: {trip.origin}</Popup>
-          </Marker>
-          <Marker position={trip.destinationCoords} icon={endIcon}>
-            <Popup>Destination: {trip.destination}</Popup>
-          </Marker>
-          <Polyline positions={[trip.originCoords, trip.destinationCoords]} color="blue" />
-        </MapContainer>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">🗺️ Trip Route</h2>
+        {hasValidCoords ? (
+          <div className="w-full h-96 min-h-[400px] rounded-lg overflow-hidden">
+            <MapContainer
+              center={[trip.originCoords[1], trip.originCoords[0]]}
+              zoom={6}
+              scrollWheelZoom={false}
+              className="w-full h-full"
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+
+              {/* Origin Marker */}
+              <Marker position={[trip.originCoords[1], trip.originCoords[0]]} icon={startIcon}>
+                <Popup>Start: {trip.origin}</Popup>
+              </Marker>
+
+              {/* Destination Marker */}
+              <Marker position={[trip.destinationCoords[1], trip.destinationCoords[0]]} icon={endIcon}>
+                <Popup>Destination: {trip.destination}</Popup>
+              </Marker>
+
+              {/* Route Polyline */}
+              <Polyline
+                positions={[
+                  [trip.originCoords[1], trip.originCoords[0]],
+                  [trip.destinationCoords[1], trip.destinationCoords[0]],
+                ]}
+                color="blue"
+              />
+            </MapContainer>
+          </div>
+        ) : (
+          <p className="text-center text-red-500">⚠️ Invalid or missing coordinates.</p>
+        )}
       </div>
 
       {/* Trip Details Section */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Trip Details</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
-          <p><strong>Origin:</strong> {trip.origin}</p>
-          <p><strong>Destination:</strong> {trip.destination}</p>
-          <p><strong>Pickup Point:</strong> {trip.pickupPoint}</p>
-          <p><strong>Date:</strong> {new Date(trip.date).toLocaleDateString()}</p>
-          <p><strong>Time:</strong> {trip.time}</p>
-          <p><strong>Vehicle:</strong> {trip.vehicle}</p>
-          <p><strong>Price Per Seat:</strong> ${trip.pricePerSeat}</p>
-          <p><strong>Seats Available:</strong> {trip.seatsAvailable}</p>
-          <p><strong>Description:</strong> {trip.description}</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">📝 Trip Details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
+          <p><strong>📍 Origin:</strong> {trip.origin}</p>
+          <p><strong>🏁 Destination:</strong> {trip.destination}</p>
+          <p><strong>📍 Pickup Point:</strong> {trip.pickupPoint}</p>
+          <p><strong>📅 Date:</strong> {new Date(trip.date).toLocaleDateString()}</p>
+          <p><strong>⏰ Time:</strong> {trip.time}</p>
+          <p><strong>🚗 Vehicle:</strong> {trip.vehicle}</p>
+          <p><strong>💰 Price Per Seat:</strong> ${trip.pricePerSeat}</p>
+          <p><strong>🪑 Seats Available:</strong> {trip.seatsAvailable}</p>
+          <p><strong>📜 Description:</strong> {trip.description}</p>
         </div>
       </div>
 
       {/* Passengers Section */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Passengers</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">👥 Passengers</h2>
         {users.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {users.map((u) => (
-              <div key={u._id} className="bg-gray-100 p-4 rounded-lg shadow-md flex items-center space-x-4">
-                <img src={`${url}/${u.profileImage}`} alt={u.name} className="w-14 h-14 rounded-full object-cover" />
+              <div key={u._id} className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md flex items-center space-x-4">
+                <img
+                  src={u.profileImage ? `${url}/${u.profileImage}` : "/default-avatar.png"}
+                  alt={u.name}
+                  className="w-14 h-14 rounded-full object-cover"
+                />
                 <div>
-                  <p className="text-lg font-semibold text-gray-800">{u.name}</p>
-                  <p className="text-sm text-gray-600">{u.email}</p>
+                  <p className="text-lg font-semibold text-gray-800 dark:text-white">{u.name}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{u.email}</p>
                   <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${u.host ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-800"}`}>
                     {u.host ? "Host" : "Passenger"}
                   </span>
@@ -136,20 +159,7 @@ function TripMap({ TripData }) {
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">No passengers found.</p>
-        )}
-      </div>
-
-      {/* Cancel/Leave Trip Button */}
-      <div className="mt-6 text-center">
-        {isHost ? (
-          <button onClick={handleCancelTrip} className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition">
-            Cancel Trip
-          </button>
-        ) : (
-          <button onClick={handleLeaveTrip} className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition">
-            Leave Trip
-          </button>
+          <p className="text-gray-600 dark:text-gray-300">No passengers found.</p>
         )}
       </div>
     </div>

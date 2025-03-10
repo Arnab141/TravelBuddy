@@ -3,7 +3,10 @@ import { useAppContext } from '../AllContext/AllContext';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { X } from 'lucide-react';
 import './LoginSign.css';
+import login_img from "../../assets/client_image/login_img.png"
+import signup_img from "../../assets/client_image/signup_img.png"
 
 function LoginSign({ stateLogin, setStateLogin }) {
   const { setShowLoginPopup, setToken, setUser, url } = useAppContext();
@@ -16,10 +19,7 @@ function LoginSign({ stateLogin, setStateLogin }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -27,7 +27,6 @@ function LoginSign({ stateLogin, setStateLogin }) {
     const endpoint = stateLogin === 'Login' ? '/api/users/login' : '/api/users/register';
     const fullUrl = `${url}${endpoint}`;
 
-    // Check if passwords match before submitting (only for signup)
     if (stateLogin === 'Signup' && formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match!");
       return;
@@ -51,15 +50,7 @@ function LoginSign({ stateLogin, setStateLogin }) {
         localStorage.setItem('token', result.token);
         setUser(result.user);
         setShowLoginPopup(false);
-        
-        // Reset form after successful login/signup
-        setFormData({
-          name: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-        });
-
+        setFormData({ name: '', email: '', password: '', confirmPassword: '' });
         toast.success(stateLogin === 'Login' ? 'Login Successful!' : 'Signup Successful!');
       } else {
         toast.error(result.message || 'Something went wrong!');
@@ -71,39 +62,58 @@ function LoginSign({ stateLogin, setStateLogin }) {
   };
 
   return (
-    <div className="login-sign-overlay">
-      <div className="login-sign-container">
-        {stateLogin === 'Login' ? (
-          <div className="login-form">
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-              <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
-              <input type="password" name="password" placeholder="Password" required onChange={handleChange} />
-              <Link to="/forget-password" className="forget-password-link" onClick={() => setShowLoginPopup(false)}>Forgot password?</Link>
-              <button type="submit" className="submit-button">Login</button>
-            </form>
-            <p>
-              Don't have an account?{' '}
-              <span onClick={() => setStateLogin('Signup')}>Sign Up</span>
-            </p>
-          </div>
-        ) : (
-          <div className="signup-form">
-            <h2>Sign Up</h2>
-            <form onSubmit={handleSubmit}>
-              <input type="text" name="name" placeholder="Name" required onChange={handleChange} />
-              <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
-              <input type="password" name="password" placeholder="Password" required onChange={handleChange} />
-              <input type="password" name="confirmPassword" placeholder="Re-enter Password" required onChange={handleChange} />
-              <button type="submit" className="submit-button">Sign Up</button>
-            </form>
-            <p>
-              Already have an account?{' '}
-              <span onClick={() => setStateLogin('Login')}>Login</span>
-            </p>
-          </div>
-        )}
-        <button className="close-button" onClick={() => setShowLoginPopup(false)}>X</button>
+    <div className="login-overlay">
+      <div className="login-container">
+        {/* Close Button */}
+        <button className="close-btn" onClick={() => setShowLoginPopup(false)}>
+          <X size={24} />
+        </button>
+
+        {/* Left Side - Form */}
+        <div className="form-container">
+          <h2 className="form-title">{stateLogin === 'Login' ? 'Sign In' : 'Sign Up'}</h2>
+          <form className="login-form" onSubmit={handleSubmit}>
+            {stateLogin === 'Signup' && (
+              <input type="text" name="name" placeholder="Username" required onChange={handleChange} className="input-field" />
+            )}
+            <input type="email" name="email" placeholder="Email" required onChange={handleChange} className="input-field" />
+            <input type="password" name="password" placeholder="Password" required onChange={handleChange} className="input-field" />
+            {stateLogin === 'Signup' && (
+              <input type="password" name="confirmPassword" placeholder="Confirm Password" required onChange={handleChange} className="input-field" />
+            )}
+
+            {/* ✅ Forgot Password should only appear in Login Form */}
+            {stateLogin === 'Login' && (
+              <div className="forgot-password">
+                <Link to="/forget-password" onClick={() => setShowLoginPopup(false)}>Forgot Password?</Link>
+              </div>
+            )}
+
+            <button type="submit" className="submit-btn">
+              {stateLogin === 'Login' ? 'Sign In' : 'Sign Up'}
+            </button>
+          </form>
+          <p className="switch-text">
+            {stateLogin === 'Login' ? "Not registered yet? " : "Already have an account? "}
+            <span onClick={() => setStateLogin(stateLogin === 'Login' ? 'Signup' : 'Login')}>
+              {stateLogin === 'Login' ? "Create an account" : "Sign In"}
+            </span>
+          </p>
+        </div>
+
+        {/* Right Side - Image Section */}
+        <div className="image-container">
+          <img
+            src={stateLogin === 'Login' ? login_img : signup_img}
+            alt="Illustration"
+            className="login-image"
+          />
+          <h2 className="login-title">
+            {stateLogin === 'Login' ? "Everything you are. In one simple link." : "Welcome to TravelBuddy"}
+          </h2>
+        </div>
+
+
       </div>
     </div>
   );
