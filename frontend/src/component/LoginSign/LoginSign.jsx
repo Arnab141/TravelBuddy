@@ -112,11 +112,10 @@ function LoginSign({ stateLogin, setStateLogin }) {
             {stateLogin === 'Login' ? "Everything you are. In one simple link." : "Welcome to TravelBuddy"}
           </h2>
         </div>
-
-
       </div>
     </div>
   );
 }
 
 export default LoginSign;
+
