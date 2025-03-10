@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -13,61 +13,26 @@ const startIcon = new L.Icon({
 });
 
 const endIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684813.png", // Different icon for destination
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684813.png",
   iconSize: [30, 45],
   iconAnchor: [15, 45],
   popupAnchor: [1, -34],
 });
 
-function TripMap() {
-  const { url, token, user, getUserInformation } = useAppContext(); // Get logged-in user
-  const [tripData, setTripData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const getUserTrip = async () => {
-    try {
-      const response = await fetch(`${url}/api/trips/get-user-trip`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.msg || "Failed to fetch user trips");
-      }
-
-      const data = await response.json();
-      setTripData(data);
-    } catch (error) {
-      console.error("Error fetching user trips:", error);
-      alert("Error: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+function TripMap({ TripData }) {
+  const { url, token, user, getUserInformation } = useAppContext();
 
   useEffect(() => {
-    getUserTrip();
     getUserInformation();
-  }, [url, token]); // Dependencies added
+  }, [url, token, user]); // Added user as a dependency
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-xl font-semibold text-gray-600 animate-spin">🌀 Loading map...</p>
-      </div>
-    );
-  }
-
-  if (!tripData) {
+  // console.log(TripData)
+  if (!TripData) {
     return <p className="text-center text-xl font-semibold text-gray-600">No trip data available.</p>;
   }
 
-  const { trip, users } = tripData;
-  const isHost = user?._id === trip.userId; // ✅ Corrected host check
+  const { trip, users } = TripData;
+  const isHost = user?._id === trip.userId;
 
   const handleCancelTrip = async () => {
     if (!window.confirm("Are you sure you want to cancel this trip?")) return;
@@ -86,7 +51,6 @@ function TripMap() {
       }
 
       alert("Trip canceled successfully!");
-      setTripData(null); // Remove trip from UI
     } catch (error) {
       console.error("Error canceling trip:", error);
       alert("Error: " + error.message);
@@ -111,10 +75,6 @@ function TripMap() {
       }
 
       alert("You have left the trip successfully!");
-      setTripData((prev) => ({
-        ...prev,
-        users: prev.users.filter((u) => u._id !== user._id),
-      }));
     } catch (error) {
       console.error("Error leaving trip:", error);
       alert("Error: " + error.message);

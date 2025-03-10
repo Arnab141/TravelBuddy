@@ -194,8 +194,8 @@ const getUserTrip = async (req, res) => {
       return res.status(400).json({ msg: "User ID is required" });
     }
 
-    // Find the trip where this user is a participant
-    const participant = await TripParticipantModel.findOne({ "users.userId": userId })
+    // Find all trips where this user is a participant
+    const participants = await TripParticipantModel.find({ "users.userId": userId })
       .populate({
         path: "tripId",
         model: "Trip", // Populate full trip details
@@ -206,54 +206,58 @@ const getUserTrip = async (req, res) => {
         select: "name profileImage email", // Get only relevant user fields
       });
 
-    if (!participant) {
-      return res.status(404).json({ msg: "No trip found for this user" });
+    if (!participants.length) {
+      return res.status(404).json({ msg: "No trips found for this user" });
     }
 
-    // Get all user details from the users array in TripParticipantModel
-    const usersDetails = await Promise.all(
-      participant.users.map(async (user) => {
-        const userData = await UserModel.findById(user.userId).select("name profileImage email");
+    // Format the response with all trips and their participants
+    const tripsData = await Promise.all(
+      participants.map(async (participant) => {
+        // Get all user details from the users array in TripParticipantModel
+        const usersDetails = await Promise.all(
+          participant.users.map(async (user) => {
+            const userData = await UserModel.findById(user.userId).select("name profileImage email");
+            return {
+              _id: userData._id,
+              name: userData.name,
+              profileImage: userData.profileImage,
+              email: userData.email,
+              host: user.host,
+            };
+          })
+        );
+
         return {
-          _id: userData._id,
-          name: userData.name,
-          profileImage: userData.profileImage,
-          email: userData.email,
-          host: user.host,
+          trip: {
+            _id: participant.tripId._id,
+            userId: participant.tripId.userId,
+            origin: participant.tripId.origin,
+            destination: participant.tripId.destination,
+            originCoords: participant.tripId.originCoords,
+            destinationCoords: participant.tripId.destinationCoords,
+            date: participant.tripId.date,
+            time: participant.tripId.time,
+            seatsAvailable: participant.tripId.seatsAvailable,
+            pricePerSeat: participant.tripId.pricePerSeat,
+            vehicle: participant.tripId.vehicle,
+            pickupPoint: participant.tripId.pickupPoint,
+            description: participant.tripId.description,
+            mobileNumber: participant.tripId.mobileNumber,
+            email: participant.tripId.email,
+          },
+          users: usersDetails, // Return all user details in the trip
         };
       })
     );
 
-    // Format the response
-    const tripDetails = {
-      trip: {
-        _id: participant.tripId._id,
-        userId: participant.tripId.userId,
-        origin: participant.tripId.origin,
-        destination: participant.tripId.destination,
-        originCoords: participant.tripId.originCoords,
-        destinationCoords: participant.tripId.destinationCoords,
-        date: participant.tripId.date,
-        time: participant.tripId.time,
-        seatsAvailable: participant.tripId.seatsAvailable,
-        pricePerSeat: participant.tripId.pricePerSeat,
-        vehicle: participant.tripId.vehicle,
-        pickupPoint: participant.tripId.pickupPoint,
-        description: participant.tripId.description,
-        mobileNumber: participant.tripId.mobileNumber,
-        email: participant.tripId.email,
-      },
-      users: usersDetails, // Return all user details in the trip
-    };
-
-    return res.status(200).json(tripDetails);
+    return res.status(200).json({ trips: tripsData });
   } catch (err) {
     console.error("Error in getUserTrip:", err);
     return res.status(500).json({ msg: "Internal server error" });
   }
 };
 
-module.exports = getUserTrip;
+
 
 
 
