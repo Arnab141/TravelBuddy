@@ -9,7 +9,6 @@ function ForgetPass() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { url } = useAppContext();
-
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     const response = await fetch(`${url}/api/users/forget-password`, {
@@ -114,6 +113,7 @@ function ForgetPass() {
           <p className="text-lg font-semibold text-blue-800">Don't worry, we'll help you.</p>
         </div>
       </div>
+
     </div>
   );
 }

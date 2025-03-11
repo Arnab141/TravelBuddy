@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate  } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../AllContext/AllContext';
 import LoginSign from '../LoginSign/LoginSign';
 import './Navbar.css';
 import user_icon from "../../assets/client_image/user_icon.jpeg";
 
 function Navbar() {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState('/');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [stateLogin, setStateLogin] = useState("Login");
@@ -29,9 +29,9 @@ function Navbar() {
 
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     getUserInformation();
-  },[token])
+  }, [token])
 
   return (
     <nav className="navbar flex items-center justify-between p-4 bg-blue-500 shadow-md h-16">
@@ -59,7 +59,7 @@ function Navbar() {
         {token ? (
           <div className="relative user-icon">
             <div className="flex items-center space-x-2 p-2 rounded-md bg-white shadow-md">
-              <img src={user.profileImage?`${url}/${user.profileImage}`: user_icon} alt="User Icon" className="h-8 w-8 rounded-full border-2 border-gray-300 object-cover" />
+              <img src={user.profileImage ? `${url}/${user.profileImage}` : user_icon} alt="User Icon" className="h-8 w-8 rounded-full border-2 border-gray-300 object-cover" />
               <p className="text-gray-800 font-medium">{user?.name || "User"}</p>
             </div>
             <div className="dropdown">
