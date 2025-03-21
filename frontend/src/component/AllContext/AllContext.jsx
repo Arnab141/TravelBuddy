@@ -32,7 +32,7 @@ export const AppProvider = ({ children }) => {
       }
 
       const userData = await response.json();
-      setUser(userData);  // ✅ Only store in state
+      setUser(userData);  
     } catch (error) {
       console.error("Error fetching user info:", error);
     }

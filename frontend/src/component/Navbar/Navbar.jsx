@@ -50,10 +50,10 @@ function Navbar() {
         <a href="#contact" className={`text-white ${activeLink === 'contact' ? 'active' : ''}`} onClick={() => handleLinkClick('contact')}>Contact</a>
       </div>
 
-      <div className="search-bar hidden md:flex items-center">
+      {/* <div className="search-bar hidden md:flex items-center">
         <input type="text" placeholder="Search..." className="p-2 rounded-l-md border border-gray-300" />
         <button className="p-2 bg-white text-blue-500 rounded-r-md border border-gray-300">Search</button>
-      </div>
+      </div> */}
 
       <div className="flex items-center space-x-4">
         {token ? (
@@ -62,14 +62,27 @@ function Navbar() {
               <img src={user.profileImage ? `${url}/${user.profileImage}` : user_icon} alt="User Icon" className="h-8 w-8 rounded-full border-2 border-gray-300 object-cover" />
               <p className="text-gray-800 font-medium">{user?.name || "User"}</p>
             </div>
-            <div className="dropdown">
-              <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</Link>
-              {/* <Link to="/chat" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Chat</Link> */}
-              <Link to="/my-trips" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Trip</Link>
-              <p onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 logout_btn">
-                Logout
-              </p>
-            </div>
+            {
+              user.admin?
+              <div className="dropdown">
+                <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</Link>
+                <Link to="/message" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Message</Link>
+                <Link to="/my-trips" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Trip</Link>
+                <p onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 logout_btn">
+                  Logout
+                </p>
+              </div>
+              :
+              <div className="dropdown">
+                <Link to="/admin/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</Link>
+                <Link to="/admin/message" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">All Message</Link>
+                <Link to="/admin/all-trips" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">All Trip</Link>
+                <Link to="/admin/all-users" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">All Users</Link>
+                <p onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 logout_btn">
+                  Logout
+                </p>
+              </div>
+            }
           </div>
         ) : (
           <div className="auth-buttons hidden md:flex space-x-4">
@@ -90,10 +103,10 @@ function Navbar() {
           <a href="#" className={`text-white ${activeLink === 'services' ? 'active' : ''}`} onClick={() => handleLinkClick('services')}>Services</a>
           <a href="#contact" className={`text-white ${activeLink === 'contact' ? 'active' : ''}`} onClick={() => handleLinkClick('contact')}>Contact</a>
 
-          <div className="search-bar flex items-center">
+          {/* <div className="search-bar flex items-center">
             <input type="text" placeholder="Search..." className="p-2 rounded-l-md border border-gray-300" />
             <button className="p-2 bg-white text-blue-500 rounded-r-md border border-gray-300">Search</button>
-          </div>
+          </div> */}
 
           {token ? (
             <div className="user-icon">

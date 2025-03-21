@@ -26,6 +26,7 @@ function MyTrip() {
       }
 
       const data = await response.json();
+       console.log("the data is = ",data);
       setAllTripData(data.trips);
     } catch (error) {
       console.error("Error fetching user trips:", error);

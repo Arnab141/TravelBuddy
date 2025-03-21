@@ -1,6 +1,7 @@
 const TripModel = require('../model/TripModel');
 const TripParticipantModel = require('../model/TripParticipantModel');
 const UserModel = require('../model/UserModel');
+const TripRequestToJoinModel= require('../model/TripRequestToJoinModel.js')
 const axios = require("axios");
 
 
@@ -29,7 +30,7 @@ const postTrip = async (req, res) => {
   try {
     const { 
       userId, origin, destination, date, time, seatsAvailable, 
-      pricePerSeat, vehicle, pickupPoint, description, mobileNumber, email 
+      vehicle, pickupPoints, description, mobileNumber, email 
     } = req.body;
 
     // Validate user
@@ -38,7 +39,7 @@ const postTrip = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    // Get coordinates
+    // Get coordinates for origin & destination
     const originCoords = await getCoordinates(origin);
     const destinationCoords = await getCoordinates(destination);
 
@@ -46,7 +47,12 @@ const postTrip = async (req, res) => {
       return res.status(400).json({ msg: "Invalid origin or destination" });
     }
 
-    // Create trip with coordinates
+    // Ensure pickupPoints array exists
+    if (!pickupPoints || !Array.isArray(pickupPoints) || pickupPoints.length === 0) {
+      return res.status(400).json({ msg: "At least one pickup point is required" });
+    }
+
+    // Create new trip
     const trip = new TripModel({
       userId,
       origin,
@@ -56,31 +62,65 @@ const postTrip = async (req, res) => {
       date,
       time,
       seatsAvailable,
-      pricePerSeat,
       vehicle,
-      pickupPoint,
+      pickupPoints, 
       description,
       mobileNumber,
       email
     });
 
-    const result = await trip.save();
+    const savedTrip = await trip.save();
 
-    // Create trip participant entry
-    const tripId = result._id;
-    const users = [{ userId: userId, host: true }];
+    // Add trip host to TripParticipant collection
     const tripParticipant = new TripParticipantModel({
-      tripId,
-      users
+      tripId: savedTrip._id,
+      users: [
+        {
+          userId,
+          host: true,
+          pickupPoint: pickupPoints[0]  // Assume the first pickup point for the host
+        }
+      ]
     });
+
     await tripParticipant.save();
 
-    res.status(201).json({ trip: result, tripParticipant });
+    res.status(201).json({ success: true, trip: savedTrip, tripParticipant });
   } catch (error) {
-    console.error("postTrip:", error);
+    console.error("postTrip Error:", error);
     res.status(500).json({ msg: "Server error" });
   }
 };
+
+
+const requestToJoinTrip = async (req, res) => {
+  try {
+    const { tripId, userId, pickupPoint } = req.body;
+
+    const trip = await TripModel.findById(tripId).populate('userId');
+    if (!trip) return res.status(404).json({ msg: "Trip not found" });
+
+    // Ensure user isn't already in the trip
+    const existingRequest = await TripRequestToJoinModel.findOne({ tripId, userId });
+    if (existingRequest) return res.status(400).json({ msg: "Request already Submit" });
+
+    const newRequest = new TripRequestToJoinModel({
+      tripId,
+      userId,
+      hostId: trip.userId._id,
+      pickupPoint,
+      status: 'pending',
+    });
+
+    await newRequest.save();
+    res.status(201).json({ success: true, msg: "Request sent to the trip host." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
 
 // Request a trip
 const requestTrip = async (req, res) => {
@@ -124,7 +164,7 @@ const allTrips = async (req, res) => {
 // Join a trip
 const joinTrip = async (req, res) => {
   try {
-    const { tripId, userId } = req.body;
+    const { tripId, userId, pickupPoint } = req.body;
 
     const trip = await TripModel.findById(tripId);
     if (!trip) {
@@ -142,31 +182,95 @@ const joinTrip = async (req, res) => {
     }
 
     // Check if user is already a participant
-    const isParticipant = tripParticipant.users.some(participant => participant.userId.toString() === userId);
+    const isParticipant = tripParticipant.users.some(
+      (participant) => participant.userId.toString() === userId
+    );
     if (isParticipant) {
       return res.status(400).json({ msg: "User is already a participant" });
     }
 
-    // Add user to participants
-    tripParticipant.users.push({ userId, host: false });
+    // Ensure pickupPoint contains required fields
+    if (!pickupPoint || !pickupPoint.price || !pickupPoint.location) {
+      return res.status(400).json({ msg: "Pickup point details are required" });
+    }
+
+    // Add user to participants with pickupPoint
+    tripParticipant.users.push({
+      userId,
+      host: false,
+      pickupPoint, // Add pickupPoint to meet schema validation
+    });
+
     await tripParticipant.save();
-    
-    // Add user to trip participants and update the seatsAvailable
+
+    // Add user to trip participants and update available seats
     const updatedTrip = await TripModel.findByIdAndUpdate(
       tripId,
       {
-        $push: { participants: { userId, joinedAt: Date.now() } }, 
-        $inc: { seatsAvailable: -1 }
+        $push: { participants: { userId, joinedAt: Date.now(), pickupPoint } },
+        $inc: { seatsAvailable: -1 },
       },
-      { new: true } 
-    );  
+      { new: true }
+    );
 
-    res.status(200).json({ msg: "User joined the trip", tripParticipant });
+    res.status(200).json({ msg: "User joined the trip", trip: updatedTrip });
   } catch (error) {
-    console.error("joinTrip:", error);
+    console.error("joinTrip error:", error);
     res.status(500).json({ msg: "Server error" });
   }
 };
+
+// leave trip
+const leaveTrip = async (req, res) => {
+  try {
+    const { tripId, userId } = req.body;
+
+    const trip = await TripModel.findById(tripId);
+    if (!trip) {
+      return res.status(404).json({ msg: "Trip not found" });
+    }
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const tripParticipant = await TripParticipantModel.findOne({ tripId });
+    if (!tripParticipant) {
+      return res.status(404).json({ msg: "Trip participants not found" });
+    }
+
+    // Check if user is a participant
+    const userIndex = tripParticipant.users.findIndex(
+      (participant) => participant.userId.toString() === userId
+    );
+    if (userIndex === -1) {
+      return res.status(400).json({ msg: "User is not a participant" });
+    }
+
+    // Remove user from trip participants
+    tripParticipant.users.splice(userIndex, 1);
+    await tripParticipant.save();
+
+    // Remove user from trip and update available seats
+    const updatedTrip = await TripModel.findByIdAndUpdate(
+      tripId,
+      {
+        $pull: { participants: { userId } },
+        $inc: { seatsAvailable: 1 },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ msg: "User left the trip", trip: updatedTrip });
+  } catch (error) {
+    console.error("leaveTrip error:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
+
 
 //Get trip by ID
 const getTripById = async (req, res) => {
@@ -258,8 +362,90 @@ const getUserTrip = async (req, res) => {
 };
 
 
+// const getRequestMessage = async (req, res) => {
+//   try {
+//     const hostId = req.user._id; // Ensure the user is authenticated
+
+//     const tripRequests = await TripRequestToJoinModel.find({ hostId, status: 'pending' })
+//       .populate('userId', 'name email profileImage')
+//       .populate('tripId', 'origin destination date time');
+
+//     if (tripRequests.length === 0) {
+//       return res.status(404).json({ success: false, msg: 'No pending trip requests' });
+//     }
+
+//     res.status(200).json({ success: true, tripRequests });
+
+//   } catch (error) {
+//     console.error('Error fetching trip requests:', error);
+//     res.status(500).json({ success: false, msg: 'Server error' });
+//   }
+// };
+
+
+const getRequestMessage = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Fetch requests where the user is either the host or the requesting user
+    const tripRequests = await TripRequestToJoinModel.find({
+      $or: [{ hostId: userId }, { userId: userId }]
+    })
+      .populate('tripId', 'origin destination date time')
+      .populate('userId', 'name email profileImage')
+      .populate('hostId', 'name email profileImage')
+      .exec();
+
+    res.status(200).json({ success: true, tripRequests });
+  } catch (error) {
+    console.error('Error fetching trip requests:', error);
+    res.status(500).json({ success: false, msg: 'Server error' });
+  }
+};
+
+const respondToRequest = async (req, res) => {
+  try {
+    const { requestId, status } = req.body;
+    const hostId = req.user._id; // The host handling the request
+
+    // Validate status input
+    if (!['accepted', 'rejected'].includes(status)) {
+      return res.status(400).json({ success: false, msg: 'Invalid status' });
+    }
+
+    // Find the trip request
+    const tripRequest = await TripRequestToJoinModel.findById(requestId);
+    if (!tripRequest) {
+      return res.status(404).json({ success: false, msg: 'Request not found' });
+    }
+
+    // Ensure only the host of the trip can update the request
+    if (tripRequest.hostId.toString() !== hostId.toString()) {
+      return res.status(403).json({ success: false, msg: 'Unauthorized action' });
+    }
+
+    // Update the request status
+    tripRequest.status = status;
+    await tripRequest.save();
+
+    // Send response
+    res.status(200).json({
+      success: true,
+      msg: `Trip request has been ${status}.`,
+      tripRequest
+    });
+
+  } catch (error) {
+    console.error('Error responding to request:', error);
+    res.status(500).json({ success: false, msg: 'Server error' });
+  }
+};
 
 
 
 
-module.exports = { postTrip, requestTrip, allTrips, joinTrip, getTripById, getUserTrip };
+
+
+
+
+module.exports = { postTrip, requestTrip, allTrips, joinTrip, getTripById, getUserTrip, requestToJoinTrip, getRequestMessage, respondToRequest, leaveTrip };

@@ -26,6 +26,8 @@ function FindTrip() {
     fetchTrips();
   }, [url]);
 
+  // console.log(trips);
+
   const filteredTrips = trips.filter(trip =>
     trip.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
     trip.destination.toLowerCase().includes(searchTerm.toLowerCase())
@@ -60,9 +62,10 @@ function FindTrip() {
             </div>
           ) : filteredTrips.length > 0 ? (
             filteredTrips.map((trip) => (
-              <div key={trip._id} className="bg-white shadow-lg rounded-lg p-5 w-full sm:w-80 md:w-72 lg:w-64 transition transform hover:scale-105 hover:shadow-xl z-[1]">
+              <div key={trip._id} className="bg-white shadow-lg rounded-xl p-6 w-full sm:w-96 md:w-80 lg:w-72 transition transform hover:scale-105 hover:shadow-2xl border border-gray-200">
                 <Usercard trip={trip} />
               </div>
+
             ))
           ) : (
             <div className="no-trips-message w-full text-center">

@@ -14,7 +14,7 @@ const startIcon = new L.Icon({
 });
 
 const endIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684813.png",
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
   iconSize: [30, 45],
   iconAnchor: [15, 45],
   popupAnchor: [1, -34],

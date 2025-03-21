@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
   profileImage: {
     type: String,
   },
+  admin:{
+    type: String,
+    default: false
+  },
   trips: {
     type: [
       {
